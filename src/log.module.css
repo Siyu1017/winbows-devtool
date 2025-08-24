@@ -4,6 +4,15 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     display: flex;
+    --error-bg: rgb(255 106 86 / 21%);
+    --error-icon-bg: rgb(216 54 54);
+    --error-color: rgb(255 168 160);
+    --warn-bg: rgb(221 190 64 / 21%);
+    --warn-icon-bg: rgb(232 148 48);
+    --warn-color: rgb(255 236 158);
+    --info-bg: rgb(126 174 255 / 21%);
+    --info-icon-bg: rgb(37 156 237);
+    --info-color: rgb(160 203 255);
 }
 
 .logContainer.noSep {
@@ -55,19 +64,19 @@
     padding: .125rem .375rem;
 }
 
-.logItem.info {
-    background: rgb(126 174 255 / 21%);
-    color: rgb(160 203 255);
-}
-
 .logItem.warn {
-    background: rgb(221 190 64 / 21%);
-    color: rgb(255 236 158);
+    background: var(--warn-bg);
+    color: var(--warn-color);
 }
 
 .logItem.error {
-    background: rgb(255 106 86 / 21%);
-    color: rgb(255 168 160);
+    background: var(--error-bg);
+    color: var(--error-color);
+}
+
+.logItem.info {
+    background: var(--info-bg);
+    color: var(--info-color);
 }
 
 .logIconContainer {}
@@ -85,17 +94,17 @@
 
 .logIcon.warn {
     mask-image: url("data:image/svg+xml,%3Csvg width=%2720%27 height=%2720%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27m1 17 9-15 9 15H1ZM11 7v5H9V7h2Zm-1 8.1a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z%27 fill=%27%23000%27/%3E%3C/svg%3E");
-    background-color: rgb(232 148 48);
+    background-color: var(--warn-icon-bg);
 }
 
 .logIcon.error {
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='size-6'%3E%3Cpath fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z' clip-rule='evenodd' /%3E%3C/svg%3E%0A");
-    background-color: rgb(216 54 54);
+    background-color: var(--error-icon-bg);
 }
 
 .logIcon.info {
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='size-6'%3E%3Cpath fill-rule='evenodd' d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z' clip-rule='evenodd' /%3E%3C/svg%3E%0A");
-    background-color: rgb(37 156 237);
+    background-color: var(--info-icon-bg);
 }
 
 .logCountContainer {
@@ -110,6 +119,18 @@
     font-weight: bold;
     width: fit-content;
     margin-right: .25rem;
+}
+
+.warn .logCount {
+    background: var(--warn-icon-bg);
+}
+
+.error .logCount {
+    background: var(--error-icon-bg);
+}
+
+.info .logCount {
+    background: var(--info-icon-bg);
 }
 
 .logContent {
