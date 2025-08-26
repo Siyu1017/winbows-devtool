@@ -4,7 +4,7 @@ Devtool for Winbows11
 
 ## Methods
 
-### Output
+### Standard output
 
 - `log(...args)`
 - `info(...args)`

@@ -1,3 +1,10 @@
+### v1.1.1
+
+## Fixed
+
+- Background styling for `console.error` icon and count
+- Issue where clicking on expandable objects in `console.warn` or `console.error` would also expand the stack trace
+
 ### v1.1.0
 
 ## Fixed

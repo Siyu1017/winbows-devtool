@@ -9,7 +9,16 @@
 </head>
 
 <body style="margin: 0;">
-    <div style="width: 100vw;height: 100vh;" id="myDevtool"></div>
+    <script>
+        function updateScreenSize() {
+            document.body.style.width = window.innerWidth + 'px';
+            document.body.style.height = window.innerHeight + 'px';
+        }
+        window.addEventListener('resize', updateScreenSize);
+        window.addEventListener('load', updateScreenSize);
+        updateScreenSize();
+    </script>
+    <div style="width: 100%;height: 100%;" id="myDevtool"></div>
     <script type="module">
         import Devtool from './dist/index.js';
 
@@ -28,6 +37,9 @@
 
         // clear
         console.clear();
+
+        // Styled log
+        console.log('%cWelcome to Winbows Devtool!', 'background-image: linear-gradient(to right, rgba(71, 202, 250, 255), rgba(3, 124, 213, 255));-webkit-text-fill-color: #0000;background-clip: text;-webkit-background-clip: text;font-weight: bold;font-size:150%;', '\nHere are the available methods:', { console });
 
         // outputs
         console.error(new Error('This is an error message'));

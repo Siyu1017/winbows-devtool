@@ -401,6 +401,13 @@ class ObjectViewer {
             this.overviewContent.innerHTML = this.getPreview(obj, this.options.shallow ? 1 : 0);
         }
 
+        this.container.addEventListener('click', (e) => {
+            if (e.cancelable) {
+                e.preventDefault();
+            }
+            e.stopPropagation();
+        })
+
         this.overview.addEventListener('click', () => {
             expanded = !expanded;
             this.overview.setAttribute('data-expand', expanded);
