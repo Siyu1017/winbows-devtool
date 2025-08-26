@@ -1,3 +1,9 @@
+### v1.1.2
+
+## Fixed
+
+- Incorrect log item size measurement
+
 ### v1.1.1
 
 ## Fixed

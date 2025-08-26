@@ -1,5 +1,5 @@
 /*!
- * winbows-devtool v1.1.1
+ * winbows-devtool v1.1.2
  * Copyright (c) Siyu1017 2025
  * Github : Siyu1017/winbows-devtool
  */
