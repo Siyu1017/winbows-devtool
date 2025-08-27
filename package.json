@@ -1,6 +1,6 @@
 {
   "name": "winbows-devtool",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Devtool for Winbows11",
   "main": "dist/index.js",
   "scripts": {

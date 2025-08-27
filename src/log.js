@@ -3,6 +3,7 @@ import styles from "./log.module.css";
 import * as utils from "./utils";
 
 const linkRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/[a-zA-Z0-9?&#=.%_\-~/]*)/g;
+const localFileRegexp = /([A-Z]:[\\/](?:[^<>:"|?*\r\n]+[\\/])*[^<>:"|?*\r\n]*)/g;
 
 function safeString(str) {
     if (typeof str !== 'string') {
@@ -163,13 +164,28 @@ function formatArgs(container, originalArgs) {
                     // auto type
                     const type = ObjectViewer.utils.getType(arg.value);
                     if (arg0IsString && type == 'string' && arg.type != 'object') {
-                        el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + safeString(arg.value);
+                        el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + safeString(arg.value).replace(linkRegexp, (match) => {
+                            return `<a href="${match}" target="_blank">${match}</a>`
+                        }).replace(localFileRegexp, (match) => {
+                            return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
+                        });
+                    } else if (type == 'string') {
+                        console.log(ObjectViewer.utils.getPreview(arg.value))
+                        el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + ObjectViewer.utils.getPreview(arg.value).replace(linkRegexp, (match) => {
+                            return `<a href="${match}" target="_blank">${match}</a>`
+                        }).replace(localFileRegexp, (match) => {
+                            return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
+                        });
                     } else {
-                        el.className = type != 'string' ? `obj-viewer-value-${type}` : '';
+                        el.className = `obj-viewer-value-${type}`;
                         el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + ObjectViewer.utils.getPreview(arg.value);
                     }
                 } else {
-                    el.textContent = String(arg.value);
+                    el.innerHTML = safeString(arg.value).replace(linkRegexp, (match) => {
+                        return `<a href="${match}" target="_blank">${match}</a>`
+                    }).replace(localFileRegexp, (match) => {
+                        return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
+                    });
                 }
             }
             parent.appendChild(el);
@@ -450,8 +466,10 @@ export default class Log {
                 const traceList = document.createElement('div');
                 utils.getStackTrace().forEach(s => {
                     const trace = document.createElement('div');
-                    trace.innerHTML = typeof s === "string" ? utils.replaceHTMLTags(s).replace(linkRegexp, (match) => {
+                    trace.innerHTML = typeof s === "string" ? safeString(s).replace(linkRegexp, (match) => {
                         return `<a href="${match}" target="_blank">${match}</a>`
+                    }).replace(localFileRegexp, (match) => {
+                        return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
                     }) : '';
                     traceList.appendChild(trace);
                 });
@@ -479,6 +497,18 @@ export default class Log {
             case 'table':
                 formatTable(this.logContent, args);
         }
+    }
+    equals(log) {
+        if (!log) return false;
+        if (['group', 'groupCollapsed', 'groupEnd'].includes(this.type)) return false;
+        if (this.isSimple == false) return false;
+        if (this.type != log.type) return false;
+        if (this.args.length != log.args.length) return false;
+        if (this.text() != log.text()) return false;
+        for (let i = 0; i < this.args.length; i++) {
+            if (ObjectViewer.utils.getType(this.args[i]) != ObjectViewer.utils.getType(log.args[i])) return false;
+        }
+        return true;
     }
     addCount() {
         if (!this.logCount || !this.logCountContainer) {

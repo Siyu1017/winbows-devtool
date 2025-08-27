@@ -131,12 +131,7 @@ export default class Devtool {
         });
 
         const attach = (log) => {
-            if (lastLog &&
-                lastLog.type == log.type &&
-                !['group', 'groupCollapsed', 'groupEnd'].includes(log.type) &&
-                log.isSimple &&
-                log.text() == lastLog.text()
-            ) {
+            if (log.equals(lastLog) == true) {
                 // Add count if the content is repeated and the content is simple or the type is not a group
                 lastLog.addCount();
             } else {

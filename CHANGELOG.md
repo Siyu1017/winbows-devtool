@@ -1,3 +1,13 @@
+### v1.2.0
+
+## Added
+
+- Highlight URL
+
+## Fixed
+
+- Logs were considered duplicates based solely on content, ignoring their type.
+
 ### v1.1.2
 
 ## Fixed
