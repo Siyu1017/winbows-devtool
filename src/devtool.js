@@ -65,6 +65,8 @@ function updateConsoleDOM(container, logs) {
 
 export default class Devtool {
     constructor() {
+        this.version = version;
+
         this.devtool = document.createElement('div');
         this.devtoolLogsArea = document.createElement('div');
         this.devtoolMeasurementArea = document.createElement('div');

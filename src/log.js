@@ -2,7 +2,8 @@ import ObjectViewer from "./object-viewer";
 import styles from "./log.module.css";
 import * as utils from "./utils";
 
-const linkRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/[a-zA-Z0-9?&#=.%_\-~/]*)/g;
+const sourceRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/[a-zA-Z0-9?&#=.%_\-~/]*)/g;
+const linkRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/(?:[A-Za-z0-9\-._~!$&()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)/g;
 const localFileRegexp = /([A-Z]:[\\/](?:[^<>:"|?*\r\n]+[\\/])*[^<>:"|?*\r\n]*)/g;
 
 function safeString(str) {
@@ -170,7 +171,6 @@ function formatArgs(container, originalArgs) {
                             return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
                         });
                     } else if (type == 'string') {
-                        console.log(ObjectViewer.utils.getPreview(arg.value))
                         el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + ObjectViewer.utils.getPreview(arg.value).replace(linkRegexp, (match) => {
                             return `<a href="${match}" target="_blank">${match}</a>`
                         }).replace(localFileRegexp, (match) => {
@@ -466,7 +466,7 @@ export default class Log {
                 const traceList = document.createElement('div');
                 utils.getStackTrace().forEach(s => {
                     const trace = document.createElement('div');
-                    trace.innerHTML = typeof s === "string" ? safeString(s).replace(linkRegexp, (match) => {
+                    trace.innerHTML = typeof s === "string" ? safeString(s).replace(sourceRegexp, (match) => {
                         return `<a href="${match}" target="_blank">${match}</a>`
                     }).replace(localFileRegexp, (match) => {
                         return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`

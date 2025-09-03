@@ -1,3 +1,9 @@
+### v1.2.1
+
+## Fixed
+
+- Refined the regular expression used for URL detection
+
 ### v1.2.0
 
 ## Added

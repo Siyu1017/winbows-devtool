@@ -49,6 +49,9 @@ document.body.appendChild(devtool.devtool);
 // clear
 console.clear();
 
+// Version
+console.info("Version:", devtool.version);
+
 // Basic output
 console.log("log");
 console.info("info");
