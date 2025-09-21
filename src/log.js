@@ -3,8 +3,8 @@ import styles from "./log.module.css";
 import * as utils from "./utils";
 
 const sourceRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/[a-zA-Z0-9?&#=.%_\-~/]*)/g;
-const linkRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/(?:[A-Za-z0-9\-._~!$&()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)/g;
-const localFileRegexp = /([A-Z]:[\\/](?:[^<>:"|?*\r\n]+[\\/])*[^<>:"|?*\r\n]*)/g;
+const linkRegexp = /(?:blob:.+?\/[a-f0-9A-F\-]+|https?:\/\/([a-zA-Z0-9\-\.]+|localhost)(:\d+)?\/(?:[A-Za-z0-9\-._~!$&()*+,;=:@/?#]|%[0-9A-Fa-f]{2})*)/g;
+const localFileRegexp = /([A-Z]:[\\/](?:[^<>:"|?*\r\n]+[\\/])*[^<>:"'|? *\r\n]*)/g;
 
 function safeString(str) {
     if (typeof str !== 'string') {

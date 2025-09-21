@@ -1,3 +1,9 @@
+### v1.3.1
+
+## Fixed
+
+- Refined the regular expression used for Local URL detection
+
 ### v1.3.0
 
 ## Added
