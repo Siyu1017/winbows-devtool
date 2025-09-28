@@ -1,3 +1,9 @@
+### v1.3.2
+
+## Fixed
+
+- The line break issue in `console.log` when applying styles
+
 ### v1.3.1
 
 ## Fixed
