@@ -5,8 +5,8 @@
     word-wrap: break-word;
     display: flex;
     --error-bg: rgb(255 106 86 / 21%);
-    --error-icon-bg: rgb(248, 72, 72);
-    --error-color: rgb(255 168 160);
+    --error-icon-bg: rgb(248 72 72);
+    --error-color: rgb(255 202 197);
     --warn-bg: rgb(221 190 64 / 21%);
     --warn-icon-bg: rgb(232 148 48);
     --warn-color: rgb(255 236 158);
@@ -98,7 +98,8 @@
 }
 
 .logIcon.error {
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 1.25C17.9371 1.25 22.75 6.06294 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12C1.25 6.06294 6.06294 1.25 12 1.25ZM12 10.5859L9 7.58594L7.58594 9L10.5859 12L7.58691 15L9.00098 16.4141L12 13.4141L14.999 16.4141L16.4131 15L13.4131 12L16.4141 9L15 7.58594L12 10.5859Z' fill='%23000000'%3E%3C/path%3E%3C/svg%3E");;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 1.25C17.9371 1.25 22.75 6.06294 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12C1.25 6.06294 6.06294 1.25 12 1.25ZM12 10.5859L9 7.58594L7.58594 9L10.5859 12L7.58691 15L9.00098 16.4141L12 13.4141L14.999 16.4141L16.4131 15L13.4131 12L16.4141 9L15 7.58594L12 10.5859Z' fill='%23000000'%3E%3C/path%3E%3C/svg%3E");
+    ;
     background-color: var(--error-icon-bg);
 }
 
@@ -165,6 +166,7 @@
 .collapsibleSummaryContainer {
     display: flex;
     width: auto;
+    overflow: hidden;
 }
 
 .collapsibleSummaryIconContainer {
@@ -190,6 +192,7 @@
 
 .collapsibleSummary {
     flex: 1;
+    overflow: hidden;
 }
 
 .collapsibleContentContainer {
@@ -205,9 +208,10 @@
 }
 
 .tableContainer {
-    --border-color: rgb(72, 72, 72);
+    --border-color: #424242;
     --odd-background: #161616;
-    --even-background: #212121;
+    --even-background: #1e1e1f;
+    --hover-color: #303138b5;
     width: inherit;
     padding: 0 0 .25rem;
 }
@@ -281,4 +285,8 @@
 
 .tableRow:nth-child(2n) {
     background: var(--even-background);
+}
+
+.tableRow:hover {
+    background: var(--hover-color);
 }

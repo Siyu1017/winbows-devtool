@@ -213,9 +213,20 @@ function formatTable(container, args) {
             rows.push(row);
         });
     } else if (type == 'object') {
-        Object.entries(data).forEach(([key, value]) => {
-            let row = { "(index)": key, ...value };
-            Object.keys(row).forEach(k => columns.add(k));
+        columns = new Set(["(index)", "Value"]);
+        Object.keys(data).forEach(key => {
+            const value = data[key];
+            let row = { "(index)": key };
+            if (typeof value === 'object') {
+                const keys = Object.keys(value)
+                keys.length > 0 ? keys.forEach(k => {
+                    if (columns.size > 20 && !columns.has(k)) return;
+                    columns.add(k);
+                    row[k] = value[k];
+                }) : row["Value"] = value;
+            } else {
+                row["Value"] = value;
+            }
             rows.push(row);
         });
     } else {
@@ -263,7 +274,7 @@ function formatTable(container, args) {
             const cell = document.createElement('td');
             cell.className = styles.tableCell;
             if (column == '(index)') {
-                cell.textContent = i;
+                cell.textContent = row[column] || i;
             } else if (Object.prototype.hasOwnProperty.call(row, column)) {
                 cell.innerHTML = ObjectViewer.utils.getPreview(row[column], 1);
             } else {

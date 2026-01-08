@@ -520,7 +520,12 @@ class ObjectViewer {
             const symbolKeys = Object.getOwnPropertySymbols(data);
 
             commonKeys.concat(symbolKeys).forEach(k => {
-                const value = data[k];
+                let value;
+                try {
+                    value = data[k];
+                } catch (e) {
+                    value = e;
+                }
                 const { item, key } = createEl({
                     key: k?.toString(),
                     value,
@@ -533,7 +538,12 @@ class ObjectViewer {
             });
 
             propertyKeys.forEach(k => {
-                const value = data[k];
+                let value;
+                try {
+                    value = data[k];
+                } catch (e) {
+                    value = e;
+                }
                 const { item, key } = createEl({
                     key: k?.toString(),
                     value,
@@ -545,6 +555,54 @@ class ObjectViewer {
                 parent.appendChild(item);
                 key.style.opacity = '.6';
             });
+
+            const __proto__ = data.__proto__ || Object.getPrototypeOf(data);
+
+            if (__proto__ && getType(data) !== 'object') {
+                const commonKeys = Object.keys(__proto__);
+                const propertyKeys = Object.getOwnPropertyNames(__proto__);
+                const symbolKeys = Object.getOwnPropertySymbols(__proto__);
+                const prototypeKeys = Array.from(new Set(commonKeys.concat(propertyKeys))).sort();
+
+                prototypeKeys.forEach(k => {
+                    let value;
+                    try {
+                        value = __proto__[k];
+                    } catch (e) {
+                        value = e;
+                    }
+                    const { item, key } = createEl({
+                        key: k?.toString(),
+                        value,
+                        preview: getPreview(value),
+                        nextFn: this.getLevel.bind(this),
+                        type: getType(value),
+                        expandable: expandable(value)
+                    })
+                    parent.appendChild(item);
+                    key.style.fontWeight = 'normal';
+                });
+
+                symbolKeys.forEach(k => {
+                    let value;
+                    try {
+                        value = __proto__[k];
+                    } catch (e) {
+                        value = e;
+                    }
+                    const { item, key } = createEl({
+                        key: k?.toString(),
+                        value,
+                        preview: getPreview(value),
+                        nextFn: this.getLevel.bind(this),
+                        type: getType(value),
+                        expandable: expandable(value)
+                    })
+                    parent.appendChild(item);
+                    key.style.fontWeight = 'normal';
+                    key.style.opacity = '.6';
+                });
+            }
         }
     }
     getPreview = getPreview

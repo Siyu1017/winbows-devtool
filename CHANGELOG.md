@@ -1,54 +1,67 @@
-### v1.3.2
+# Changelog
 
-## Fixed
+## v1.4.0
+
+### Added
+
+- Support for prototype properties
+
+### Fixed
+
+- Resolved issues with `console.table` when an Object is passed as the first argument
+- Fixed an issue where object viewers wrapped by `console.error`, `console.warn`, and similar methods would clip content when their width exceeded the container, preventing the full content from being displayed
+
+## v1.3.2
+
+### Fixed
 
 - The line break issue in `console.log` when applying styles
 
-### v1.3.1
+## v1.3.1
 
-## Fixed
+### Fixed
 
 - Refined the regular expression used for Local URL detection
 
-### v1.3.0
+## v1.3.0
 
-## Added
+### Added
 
 - Support Objects that use Symbols as keys
 
-### v1.2.1
+## v1.2.1
 
-## Fixed
+### Fixed
 
 - Refined the regular expression used for URL detection
 
-### v1.2.0
+## v1.2.0
 
-## Added
+### Added
 
 - Highlight URL
 
-## Fixed
+### Fixed
 
 - Logs were considered duplicates based solely on content, ignoring their type.
 
-### v1.1.2
+## v1.1.2
 
-## Fixed
+### Fixed
 
 - Incorrect log item size measurement
 
-### v1.1.1
+## v1.1.1
 
-## Fixed
+### Fixed
 
 - Background styling for `console.error` icon and count
 - Issue where clicking on expandable objects in `console.warn` or `console.error` would also expand the stack trace
 
-### v1.1.0
+## v1.1.0
 
-## Fixed
+### Fixed
 
 - Repeated warn / error / info count background
 
-### v1.0.0
+## v1.0.0
