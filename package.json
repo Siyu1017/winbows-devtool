@@ -1,6 +1,6 @@
 {
   "name": "winbows-devtool",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Devtool for Winbows11",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Siyu1017/winbows-devtool#readme",
   "dependencies": {
     "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.46.2",
+    "rollup": "^4.55.1",
     "rollup-plugin-postcss": "^4.0.2"
   }
 }

@@ -213,7 +213,7 @@ function formatTable(container, args) {
             rows.push(row);
         });
     } else if (type == 'object') {
-        columns = new Set(["(index)", "Value"]);
+        columns.add('(index)');
         Object.keys(data).forEach(key => {
             const value = data[key];
             let row = { "(index)": key };
@@ -223,8 +223,12 @@ function formatTable(container, args) {
                     if (columns.size > 20 && !columns.has(k)) return;
                     columns.add(k);
                     row[k] = value[k];
-                }) : row["Value"] = value;
+                }) : (
+                    columns.add("Value"), 
+                    row["Value"] = value
+                );
             } else {
+                columns.add("Value");
                 row["Value"] = value;
             }
             rows.push(row);
@@ -444,29 +448,25 @@ export default class Log {
             if (ObjectViewer.utils.expandable(arg)) this.isSimple = false;
         }
 
-        this.observer = new ResizeObserver(() => {
-            this.updateSize();
-            this[emit]('resize');
-        });
-        this.observer.observe(this.logContent);
-
         this.width = 0;
         this.height = 0;
         this.onChange = () => { };
-        this.updateSize = utils.throttle(() => {
-            if (this.measureEl) {
-                const el = this.container.cloneNode(true);
-                this.measureEl.appendChild(el);
-                const { width, height } = el.getBoundingClientRect();
-                if (this.width != width) {
-                    this.width = width;
-                }
-                if (this.height != height) {
-                    this.height = height;
-                }
-                el.remove();
+        this.updateSize = () => {
+            const { width, height } = this.container.getBoundingClientRect();
+            if (this.width != width) {
+                this.width = width;
             }
-        })
+            if (this.height != height) {
+                this.height = height;
+            }
+        }
+
+        this.observer = new ResizeObserver(utils.debounce(() => {
+            if (!utils.isHidden(this.container) && this.container) {
+                this.updateSize();
+            }
+        }, 16))
+        this.observer.observe(this.logContent);
 
         switch (this.type) {
             case 'log':
@@ -551,10 +551,6 @@ export default class Log {
     }
     getGroupID() {
         return this.groupStack[this.groupStack.length - 1] || 'root';
-    }
-    setMeasureEl(el) {
-        this.measureEl = el;
-        this.updateSize();
     }
     setLastLog(log) {
         if (log == null) {

@@ -9,6 +9,7 @@
     background: rgb(30, 30, 30);
     color: #efefef;
     color-scheme: dark;
+    --padding: .5rem;
 }
 
 .devtool *::selection {
@@ -34,18 +35,18 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    width: calc(100% - var(--padding) * 2);
     visibility: hidden;
     z-index: -1;
     pointer-events: none;
     height: 0;
     overflow-x: hidden;
-    padding: .5rem;
+    /*padding: var(--padding);*/
     height: fit-content;
 }
 
 .devtoolLogs {
-    padding: .5rem;
+    padding: var(--padding);
     overflow-x: hidden;
     position: absolute;
     width: 100%;

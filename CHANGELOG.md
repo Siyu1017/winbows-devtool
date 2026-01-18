@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.1
+
+### Fixed
+
+- Fixed an issue where the "Value" column was still created and resulted in empty rows when the first argument of `console.table` was an object whose properties were all objects.
+
 ## v1.4.0
 
 ### Added

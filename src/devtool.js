@@ -1,6 +1,6 @@
 import Log from "./log";
 import styles from "./devtool.module.css";
-import { throttle, randomID } from "./utils";
+import { throttle, randomID, isHidden, debounce } from "./utils";
 
 function updateConsoleDOM(container, logs) {
     const newNodes = logs;
@@ -81,6 +81,7 @@ export default class Devtool {
         this.devtoolLogsArea.appendChild(this.devtoolMeasurementArea);
         this.devtoolLogsArea.appendChild(this.devtoolLogs);
 
+        let idx = 0;
         let lastLog;
         let logs = [];
         let groupStack = [];
@@ -92,20 +93,41 @@ export default class Devtool {
         const counters = new Map();
 
         const renderViewport = throttle((topTolerance = 800, bottomTolerance = 800) => {
+            if (isHidden(this.devtool)) return;
+
             const viewportH = this.devtool.clientHeight;
+            const viewportW = this.devtoolMeasurementArea.getBoundingClientRect().width;
             const scrollTop = this.devtool.scrollTop;
             const start = Math.max(0, scrollTop - topTolerance);
             const end = scrollTop + viewportH + bottomTolerance;
-            let height = 0;
-            let startIndex = -1;
-            let endIndex = 0;
-            let top = 0;
-            let clonedLogs = logs.filter(log => {
+            let visibleLogs = logs.filter(log => {
                 return !collapsedGroups.has(log.getGroupID());
             })
 
-            for (let i = 0; i < clonedLogs.length; i++) {
-                const log = clonedLogs[i];
+            const measureFrag = document.createDocumentFragment();
+            const logsToUpdate = [];
+            for (let i = 0; i < visibleLogs.length; i++) {
+                const log = visibleLogs[i];
+                if (log.height === 0 || log.width !== viewportW) {
+                    logsToUpdate.push(log);
+                    measureFrag.appendChild(log.container);
+                }
+            }
+            if (logsToUpdate.length > 0) {
+                console.log(logsToUpdate.length)
+                this.devtoolMeasurementArea.appendChild(measureFrag);
+                for (const log of logsToUpdate) {
+                    log.updateSize(viewportW);
+                }
+                this.devtoolMeasurementArea.textContent = '';
+            }
+
+            let height = 0;
+            let top = 0;
+            let startIndex = -1;
+            let endIndex = -1;
+            for (let i = 0; i < visibleLogs.length; i++) {
+                const log = visibleLogs[i];
                 const orgHeight = height;
                 height += log.height;
                 if (height >= start && orgHeight <= end) {
@@ -117,20 +139,40 @@ export default class Devtool {
                 }
             }
 
-            const atBottom = this.devtool.scrollHeight - this.devtool.clientHeight < this.scrollTop + 1;
+            const atBottom = Math.abs(this.devtool.scrollHeight - this.devtool.scrollTop - this.devtool.clientHeight) < 1 || this.devtool.offsetHeight == this.devtool.scrollHeight;
 
             this.devtoolLogsArea.style.height = height + 'px';
             this.devtoolLogs.style.top = top + 'px';
 
             const target = this.devtoolLogs;
-            const newContents = clonedLogs.slice(startIndex, endIndex + 1).map(t => t.container);
+            const newContents = visibleLogs.slice(startIndex, endIndex + 1).map(t => t.container);
+
+            updateConsoleDOM(target, newContents);
 
             if (atBottom) {
-                this.devtool.scrollTop = 99999999;
+                this.devtool.scrollTop = this.devtool.scrollHeight * 1.5;
+            }
+        });
+
+        const CHUNK_SIZE = 1000;
+        let queue = [];
+        const handleEnqueued = debounce(() => {
+            const chunk = queue.splice(0, CHUNK_SIZE);
+            for (const fn of chunk) {
+                try {
+                    fn()
+                } catch (e) { };
             }
 
-            return updateConsoleDOM(target, newContents);
-        });
+            if (queue.length > 0) {
+                handleEnqueued();
+            }
+        })
+
+        const enqueue = (log) => {
+            queue.push(log);
+            handleEnqueued();
+        }
 
         const attach = (log) => {
             if (log.equals(lastLog) == true) {
@@ -139,12 +181,11 @@ export default class Devtool {
             } else {
                 logs.push(log);
                 log.setLastLog(lastLog);
-                log.setMeasureEl(this.devtoolMeasurementArea);
                 log.on('resize', renderViewport);
                 log.setGroupStack(groupStack);
 
                 if (log.type == 'group' || log.type == 'groupCollapsed') {
-                    const id = randomID(12);
+                    const id = idx++;
                     const group = {
                         id,
                         collapsed: log.type == 'groupCollapsed',
@@ -206,21 +247,21 @@ export default class Devtool {
             let topTolerance = 0;
             let bottomTolerance = 0;
 
-            if (delta > 500) {
-                tolerance = 800;
+            if (delta > 200) {
+                tolerance = 1200;
             }
             if (tolerance > 2000) {
                 tolerance = 2000;
             }
-            if (tolerance < 100) {
-                tolerance = 100;
+            if (tolerance < 600) {
+                tolerance = 600;
             }
 
             if (scrollTop < lastScrollTop) {
                 topTolerance = tolerance;
-                bottomTolerance = 100;
+                bottomTolerance = 600;
             } else {
-                topTolerance = 100;
+                topTolerance = 600;
                 bottomTolerance = tolerance;
             }
 
@@ -234,23 +275,23 @@ export default class Devtool {
             //========== Output ==========//
             log: (...args) => {
                 if (args.length == 0) return;
-                attach(new Log('log', args));
+                enqueue(() => attach(new Log('log', args)));
             },
             info: (...args) => {
                 if (args.length == 0) return;
-                attach(new Log('info', args));
+                enqueue(() => attach(new Log('info', args)));
             },
             debug: (...args) => {
                 if (args.length == 0) return;
-                attach(new Log('debug', args));
+                enqueue(() => attach(new Log('debug', args)));
             },
             warn: (...args) => {
                 if (args.length == 0) return;
-                attach(new Log('warn', args));
+                enqueue(() => attach(new Log('warn', args)));
             },
             error: (...args) => {
                 if (args.length == 0) return;
-                attach(new Log('error', args));
+                enqueue(() => attach(new Log('error', args)));
             },
 
             //=========== Group ==========//
@@ -258,87 +299,101 @@ export default class Devtool {
                 if (!args[0]) {
                     args[0] = 'console.group';
                 }
-                attach(new Log('group', args));
+                enqueue(() => attach(new Log('group', args)));
             },
             groupCollapsed: (...args) => {
                 if (!args[0]) {
                     args[0] = 'console.groupCollapsed';
                 }
-                attach(new Log('groupCollapsed', args));
+                enqueue(() => attach(new Log('groupCollapsed', args)));
             },
             groupEnd: () => {
-                groupStack.pop();
-                lastLog = {
-                    type: 'groupEnd'
-                }
+                enqueue(() => {
+                    groupStack.pop();
+                    lastLog = {
+                        type: 'groupEnd'
+                    }
+                })
             },
 
             //=========== Count ==========//
             count: (label = 'default') => {
-                label = String(label);
-                const current = (counters.get(label) || 0) + 1;
-                counters.set(label, current);
-                attach(new Log('log', [`${label}: ${current}`]));
+                enqueue(() => {
+                    label = String(label);
+                    const current = (counters.get(label) || 0) + 1;
+                    counters.set(label, current);
+                    attach(new Log('log', [`${label}: ${current}`]));
+                })
             },
             countReset: (label = 'default') => {
-                label = String(label);
-                if (!counters.has(label)) {
-                    return attach(new Log('warn', [`Count for '${label}' does not exist`]));
-                }
-                counters.set(label, 0);
+                enqueue(() => {
+                    label = String(label);
+                    if (!counters.has(label)) {
+                        return attach(new Log('warn', [`Count for '${label}' does not exist`]));
+                    }
+                    counters.set(label, 0);
+                })
             },
 
             //=========== Time ===========//
             time: (label = 'default') => {
-                label = String(label);
-                if (timers.has(label)) {
-                    return attach(new Log('warn', [`Timer '${label}' already exists`]));
-                }
-                timers.set(label, performance.now());
+                enqueue(() => {
+                    label = String(label);
+                    if (timers.has(label)) {
+                        return attach(new Log('warn', [`Timer '${label}' already exists`]));
+                    }
+                    timers.set(label, performance.now());
+                })
             },
             timeLog: (label = 'default', ...args) => {
-                label = String(label);
-                if (!timers.has(label)) {
-                    return attach(new Log('warn', [`Timer '${label}' does not exist`]));
-                }
-                const duration = performance.now() - timers.get(label);
-                attach(new Log('log', [`${label}: ${duration}ms`].concat(args)));
+                enqueue(() => {
+                    label = String(label);
+                    if (!timers.has(label)) {
+                        return attach(new Log('warn', [`Timer '${label}' does not exist`]));
+                    }
+                    const duration = performance.now() - timers.get(label);
+                    attach(new Log('log', [`${label}: ${duration}ms`].concat(args)));
+                })
             },
             timeEnd: (label = 'default') => {
-                label = String(label);
-                if (!timers.has(label)) {
-                    return attach(new Log('warn', [`Timer '${label}' does not exist`]));
-                }
-                const duration = performance.now() - timers.get(label);
-                attach(new Log('log', [`${label}: ${duration}ms`]));
-                timers.delete(label);
+                enqueue(() => {
+                    label = String(label);
+                    if (!timers.has(label)) {
+                        return attach(new Log('warn', [`Timer '${label}' does not exist`]));
+                    }
+                    const duration = performance.now() - timers.get(label);
+                    attach(new Log('log', [`${label}: ${duration}ms`]));
+                    timers.delete(label);
+                })
             },
 
             //=========== Other ==========//
             table: (...args) => {
                 if (!args[0]) return;
-                attach(new Log('table', args));
+                enqueue(() => attach(new Log('table', args)));
             },
             trace: (...args) => {
                 if (!args[0]) args[0] = 'console.trace';
-                attach(new Log('trace', args));
+                enqueue(() => attach(new Log('trace', args)));
             },
             assert: (condition, ...args) => {
-                if (!condition) attach(new Log('error', ['Assertion failed:', ...args]));
+                if (!condition) enqueue(() => attach(new Log('error', ['Assertion failed:', ...args])));
             },
             clear: () => {
-                // Reset the logs
-                logs = [];
-                lastLog = null;
+                enqueue(() => {
+                    // Reset the logs
+                    logs = [];
+                    lastLog = null;
 
-                // Reset the groups
-                groupStack = [];
-                collapsedGroups = new Set();
-                groupScopes = new Map();
-                groups = {};
+                    // Reset the groups
+                    groupStack = [];
+                    collapsedGroups = new Set();
+                    groupScopes = new Map();
+                    groups = {};
 
-                attach(new Log('clear', [`Console was cleared`]));
-                renderViewport();
+                    attach(new Log('clear', [`Console was cleared`]));
+                    renderViewport();
+                })
             }
         }
     }

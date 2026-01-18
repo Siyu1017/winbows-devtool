@@ -155,6 +155,18 @@ export function detectCycle(obj) {
     return detect(obj);
 }
 
+export function debounce(fn, delay = 16) {
+    let timeout;
+
+    return function debouncedFn(...args) {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            fn.apply(this, args);
+        }, delay);
+    }
+}
+
 export function throttle(fn) {
     let timeout = null;
 
@@ -166,4 +178,35 @@ export function throttle(fn) {
 
         if (!timeout) timeout = setTimeout(throttler, 16);
     };
+}
+
+export function isHidden(el) {
+    if (!el || !el.isConnected) return true;
+
+    const style = getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+
+    if (
+        style.display === 'none' ||
+        style.visibility === 'hidden' ||
+        style.opacity === '0'
+    ) {
+        return true;
+    }
+
+    // overflow
+    let current = el;
+    while ((current = current.parentElement)) {
+        const computedStyle = getComputedStyle(el);
+        if (computedStyle.overflow === 'scroll' || computedStyle.overflow === 'hidden') {
+            const containerRect = current.getBoundingClientRect();
+            if (rect.right < containerRect.left ||
+                rect.left > containerRect.right ||
+                rect.bottom < containerRect.top ||
+                rect.top > containerRect.bottom
+            ) return true;
+        }
+    }
+
+    return rect.width === 0 && rect.height === 0;
 }
