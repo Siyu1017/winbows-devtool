@@ -114,7 +114,6 @@ export default class Devtool {
                 }
             }
             if (logsToUpdate.length > 0) {
-                console.log(logsToUpdate.length)
                 this.devtoolMeasurementArea.appendChild(measureFrag);
                 for (const log of logsToUpdate) {
                     log.updateSize(viewportW);
