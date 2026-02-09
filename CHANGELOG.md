@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v1.4.2
+
 ### Fixed
 
 - Resolved an issue where continuous high-volume log output could cause the console to stop updating.
