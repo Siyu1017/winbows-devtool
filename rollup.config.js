@@ -11,7 +11,7 @@ module.exports = [{
             banner: `/*!
  * winbows-devtool v${pkg.version}
  * Copyright (c) Siyu1017 ${new Date().getFullYear()}
- * Github : Siyu1017/winbows-devtool
+ * Github: Siyu1017/winbows-devtool
  */`,
             intro: `const version="${pkg.version}"`
         }

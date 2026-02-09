@@ -1,6 +1,6 @@
 import Log from "./log";
 import styles from "./devtool.module.css";
-import { throttle, randomID, isHidden, debounce } from "./utils";
+import { throttle, isHidden } from "./utils";
 
 function updateConsoleDOM(container, logs) {
     const newNodes = logs;
@@ -60,8 +60,6 @@ function updateConsoleDOM(container, logs) {
         }
     }
 }
-
-
 
 export default class Devtool {
     constructor() {
@@ -155,7 +153,7 @@ export default class Devtool {
 
         const CHUNK_SIZE = 1000;
         let queue = [];
-        const handleEnqueued = debounce(() => {
+        function _handler() {
             const chunk = queue.splice(0, CHUNK_SIZE);
             for (const fn of chunk) {
                 try {
@@ -164,13 +162,14 @@ export default class Devtool {
             }
 
             if (queue.length > 0) {
-                handleEnqueued();
+                requestAnimationFrame(_handler);
             }
-        })
+        }
 
+        const handler = throttle(_handler);
         const enqueue = (log) => {
             queue.push(log);
-            handleEnqueued();
+            handler();
         }
 
         const attach = (log) => {
