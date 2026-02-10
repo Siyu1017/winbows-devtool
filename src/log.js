@@ -74,7 +74,7 @@ function parseLog(originalArgs) {
                             value: utils.toNumber(arg)
                         });
                         break;
-                    case 'o':
+                    case 'O':
                         target.push({
                             type: 'object',
                             options: {
@@ -83,7 +83,7 @@ function parseLog(originalArgs) {
                             value: arg
                         });
                         break;
-                    case 'O':
+                    case 'o':
                         target.push({
                             type: 'object',
                             value: arg
@@ -564,7 +564,8 @@ export default class Log {
         }
     }
     getGroupID() {
-        return this.groupStack[this.groupStack.length - 1] || 'root';
+        const len = this.groupStack.length;
+        return len > 0 ? this.groupStack[len - 1] : 'root';
     }
     setLastLog(log) {
         if (log == null) {

@@ -6,6 +6,8 @@
 
 - Fixed some issues caused by asynchronous updates
 - Include stack trace when logging Error objects
+- Fix `console.group` not including the top-level element
+- Fix %o and %O format specifiers being reversed
 
 ## v1.4.2
 
