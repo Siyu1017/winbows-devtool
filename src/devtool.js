@@ -316,52 +316,56 @@ export default class Devtool {
 
             //=========== Count ==========//
             count: (label = 'default') => {
+                label = String(label);
+                const current = (counters.get(label) || 0) + 1;
+                counters.set(label, current);
                 enqueue(() => {
-                    label = String(label);
-                    const current = (counters.get(label) || 0) + 1;
-                    counters.set(label, current);
                     attach(new Log('log', [`${label}: ${current}`]));
                 })
             },
             countReset: (label = 'default') => {
-                enqueue(() => {
-                    label = String(label);
-                    if (!counters.has(label)) {
-                        return attach(new Log('warn', [`Count for '${label}' does not exist`]));
-                    }
-                    counters.set(label, 0);
-                })
+                label = String(label);
+                if (!counters.has(label)) {
+                    return enqueue(() => {
+                        attach(new Log('warn', [`Count for '${label}' does not exist`]));
+                    })
+                }
+                counters.set(label, 0);
             },
 
             //=========== Time ===========//
             time: (label = 'default') => {
-                enqueue(() => {
-                    label = String(label);
-                    if (timers.has(label)) {
-                        return attach(new Log('warn', [`Timer '${label}' already exists`]));
-                    }
-                    timers.set(label, performance.now());
-                })
+                label = String(label);
+                if (timers.has(label)) {
+                    return enqueue(() => {
+                        attach(new Log('warn', [`Timer '${label}' already exists`]));
+                    })
+                }
+                timers.set(label, performance.now());
             },
             timeLog: (label = 'default', ...args) => {
+                label = String(label);
+                if (!timers.has(label)) {
+                    return enqueue(() => {
+                        attach(new Log('warn', [`Timer '${label}' does not exist`]));
+                    })
+                }
+                const duration = performance.now() - timers.get(label);
                 enqueue(() => {
-                    label = String(label);
-                    if (!timers.has(label)) {
-                        return attach(new Log('warn', [`Timer '${label}' does not exist`]));
-                    }
-                    const duration = performance.now() - timers.get(label);
                     attach(new Log('log', [`${label}: ${duration}ms`].concat(args)));
                 })
             },
             timeEnd: (label = 'default') => {
+                label = String(label);
+                if (!timers.has(label)) {
+                    return enqueue(() => {
+                        attach(new Log('warn', [`Timer '${label}' does not exist`]));
+                    })
+                }
+                const duration = performance.now() - timers.get(label);
+                timers.delete(label);
                 enqueue(() => {
-                    label = String(label);
-                    if (!timers.has(label)) {
-                        return attach(new Log('warn', [`Timer '${label}' does not exist`]));
-                    }
-                    const duration = performance.now() - timers.get(label);
                     attach(new Log('log', [`${label}: ${duration}ms`]));
-                    timers.delete(label);
                 })
             },
 
@@ -378,20 +382,24 @@ export default class Devtool {
                 if (!condition) enqueue(() => attach(new Log('error', ['Assertion failed:', ...args])));
             },
             clear: () => {
-                enqueue(() => {
-                    // Reset the logs
-                    logs = [];
-                    lastLog = null;
+                // Reset the logs
+                logs = [];
+                lastLog = null;
 
-                    // Reset the groups
-                    groupStack = [];
-                    collapsedGroups = new Set();
-                    groupScopes = new Map();
-                    groups = {};
+                // Reset the groups
+                groupStack = [];
+                collapsedGroups = new Set();
+                groupScopes = new Map();
+                groups = {};
 
-                    attach(new Log('clear', [`Console was cleared`]));
-                    renderViewport();
-                })
+                // Reset counters
+                counters.clear();
+
+                // Reset queue
+                queue = [];
+
+                attach(new Log('clear', [`Console was cleared`]));
+                renderViewport();
             }
         }
     }

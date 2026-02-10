@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed some issues caused by asynchronous updates.
+
 ## v1.4.2
 
 ### Fixed
