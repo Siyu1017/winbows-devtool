@@ -4,19 +4,20 @@
 
 ### Fixed
 
-- Fixed some issues caused by asynchronous updates.
+- Fixed some issues caused by asynchronous updates
+- Include stack trace when logging Error objects
 
 ## v1.4.2
 
 ### Fixed
 
-- Resolved an issue where continuous high-volume log output could cause the console to stop updating.
+- Resolved an issue where continuous high-volume log output could cause the console to stop updating
 
 ## v1.4.1
 
 ### Fixed
 
-- Fixed an issue where the "Value" column was still created and resulted in empty rows when the first argument of `console.table` was an object whose properties were all objects.
+- Fixed an issue where the "Value" column was still created and resulted in empty rows when the first argument of `console.table` was an object whose properties were all objects
 
 ## v1.4.0
 

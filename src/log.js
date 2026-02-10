@@ -166,7 +166,21 @@ function formatArgs(container, originalArgs) {
                 } else if (isTopLevel) {
                     // auto type
                     const type = ObjectViewer.utils.getType(arg.value);
-                    if (arg0IsString && type == 'string' && arg.type != 'object') {
+                    if (type == 'error') {
+                        if (index != 0) {
+                            el.innerHTML = ' ';
+                        }
+                        if (arg.value.stack) {
+                            el.innerHTML += safeString(arg.value.stack).replace(sourceRegexp, (match) => {
+                                return `<a href="${match}" target="_blank">${match}</a>`
+                            }).replace(localFileRegexp, (match) => {
+                                return `<a href="javascript:void(0)" data-href="${match}">${match}</a>`
+                            })
+                        } else {
+                            el.innerHTML += safeString(arg.value);
+                        }
+                        el.innerHTML += '\n';
+                    } else if (arg0IsString && type == 'string' && arg.type != 'object') {
                         el.innerHTML = (container.childElementCount > 0 ? ' ' : '') + safeString(arg.value).replace(linkRegexp, (match) => {
                             return `<a href="${match}" target="_blank">${match}</a>`
                         }).replace(localFileRegexp, (match) => {
@@ -224,7 +238,7 @@ function formatTable(container, args) {
                     columns.add(k);
                     row[k] = value[k];
                 }) : (
-                    columns.add("Value"), 
+                    columns.add("Value"),
                     row["Value"] = value
                 );
             } else {
